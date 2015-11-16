@@ -2,12 +2,22 @@
 import os
 import sys
 import getopt
+import importlib
+
+#default values
+manage_commads =  []
+e = {}
+e['env'] = '../venv-p3'
+e['p'] = '8000'
+e['ip'] = '0.0.0.0'
+e['settings'] = 'onytes.settings.local'
 
 def usage():
     lines = ["Usage:",
              "",
              "-r --runserver: runserver ",
              "-u --update: update db",
+             "-d --drop: drop db",
              "-p --port [port]",
              "-i --ip [ip]",
              "-s --settings [settings]",
@@ -15,23 +25,24 @@ def usage():
              "-h --help"]
     print '\n'.join(lines)
 
+def drop_db():
+    i = importlib.import_module( e['settings'])
+    for db in i.DATABASES.keys():
+        if i.DATABASES[db]['ENGINE'] ==  'django.db.backends.sqlite3':
+            cmd = "rm %s" % i.DATABASES[db]['NAME']
+            print cmd
+            os.system(cmd)
+
+
+
 def main():
-    #default values
-    manage_commads =  []
-    e = {}
-    e['env'] = '../venv-p3'
-    e['p'] = '8000'
-    e['ip'] = '0.0.0.0'
-    e['settings'] = 'onytes.settings.local'
-
-
     if sys.argv[1:] == []:
         usage()
         sys.exit(2)
 
     try:
         opts, _args = getopt.getopt(sys.argv[1:],
-                                    'hrup:i:s:l', ['help', 'runserver', 'update', 'port=', 'ip=', 'settings=', '--shell'])
+                                    'hrudp:i:s:l', ['help', 'runserver', 'update', 'dropdb', 'port=', 'ip=', 'settings=', '--shell'])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -44,6 +55,8 @@ def main():
             manage_commads.append('runserver')
         elif opt in ('-u', '--update'):
             manage_commads.append('syncdb')
+        elif opt in ('-d', '--dropdb'):
+            drop_db()
         elif opt in ('-p', '--port'):
             e['p'] = arg
         elif opt in ('-i', '--ip'):

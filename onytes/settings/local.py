@@ -1,8 +1,6 @@
 import os
 from onytes.settings.base import *
 
-
-
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 

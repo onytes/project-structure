@@ -7,7 +7,7 @@ import importlib
 #default values
 manage_commads =  []
 e = {}
-e['env'] = '../venv-p3'
+e['env'] = '../venv'
 e['p'] = '8000'
 e['ip'] = '0.0.0.0'
 e['settings'] = 'onytes.settings.local'

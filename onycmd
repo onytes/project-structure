@@ -11,6 +11,8 @@ e['env'] = '../venv-p3'
 e['p'] = '8000'
 e['ip'] = '0.0.0.0'
 e['settings'] = 'onytes.settings.local'
+e['requirements'] = 'requirements.txt'
+
 
 def usage():
     lines = ["Usage:",
@@ -21,8 +23,8 @@ def usage():
              "-p --port [port]",
              "-i --ip [ip]",
              "-s --settings [settings]",
-             "-h --shell",
-             "-h --help"]
+             "-h --help",
+             "-q --requirements"]
     print '\n'.join(lines)
 
 def drop_db():
@@ -34,6 +36,10 @@ def drop_db():
             os.system(cmd)
 
 
+def install_requirements():
+    script = 'bash -c "source %(env)s/bin/activate && pip install -r %(requirements)s"'  % e
+    print script
+    os.system(script)
 
 def main():
     if sys.argv[1:] == []:
@@ -42,7 +48,8 @@ def main():
 
     try:
         opts, _args = getopt.getopt(sys.argv[1:],
-                                    'hrudp:i:s:l', ['help', 'runserver', 'update', 'dropdb', 'port=', 'ip=', 'settings=', '--shell'])
+                'hrumdp:i:s:q',
+                ['help', 'runserver', 'update', 'migrate', 'dropdb', 'port=', 'ip=', 'settings=', '--requirements'])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -55,8 +62,12 @@ def main():
             manage_commads.append('runserver')
         elif opt in ('-u', '--update'):
             manage_commads.append('syncdb')
+        elif opt in ('-m', '--migrate'):
+            manage_commads.append('migrate')
         elif opt in ('-d', '--dropdb'):
             drop_db()
+        elif opt in ('-q', '--requirements'):
+            install_requirements()
         elif opt in ('-p', '--port'):
             e['p'] = arg
         elif opt in ('-i', '--ip'):
